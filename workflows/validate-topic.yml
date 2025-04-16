@@ -1,0 +1,22 @@
+name: Validate Topic Request
+
+on:
+  pull_request:
+    paths:
+      - 'topics/**.tf'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Run validation
+        run: python .github/scripts/validate_topic.py
