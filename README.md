@@ -1,58 +1,61 @@
-# self_service_kafka
 
-+-------------------------------+
-| Équipe consommatrice (team2) |
-| souhaite consommer un topic  |
-+---------------+--------------+
-                |
-                v
-+-------------------------------+
-| Création d'une demande YAML  |
-| ou via portail interne       |
-+---------------+--------------+
-                |
-                v
-+-------------------------------+
-| GitHub Action détecte la PR  |
-| ou webhook reçoit la demande |
-+---------------+--------------+
-                |
-                v
-+-------------------------------+
-| Le propriétaire du topic     |
-| (ex: team1) est identifié     |
-+---------------+--------------+
-                |
-                v
-+-------------------------------+
-| team1 est notifié (GitHub,   |
-| Slack, email, etc.)          |
-+---------------+--------------+
-                |
-                v
-+-------------------------------+
-| team1 approuve ou refuse     |
-| la demande                   |
-+------+---------+-------------+
-       |         |
-       v         v
-    [OK]       [Refus]
-     |             |
-     v             v
-+-------------------+      +------------------------+
-| Terraform apply   |      | PR/comment mis à jour |
-| crée les ACLs     |      | avec statut refusé    |
-+--------+----------+      +------------------------+
-         |
-         v
-+-------------------------------+
-| Équipe consommatrice (team2) |
-| peut lire et consommer depuis|
-| le topic autorisé            |
-+-------------------------------+
+# Kafka Access & Topic Creation Platform
 
-# Request for subscription 
+Ce dépôt contient deux modules :
 
+1. 📦 **Création de topics Kafka** avec validation, nomenclature, quotas, et ACLs automatisés.
+2. 🔐 **Gestion des abonnements** à des topics existants avec validation par les propriétaires.
+
+---
+
+## 🧭 Flowchart 1 : Création de topics Kafka
+
+```text
+[Étape 1] 🧑‍💻 Développeur soumet une demande
+   |
+   |--> via PR GitHub (ajout d’un .tf) 
+   |        OU via portail interne (qui crée une PR)
+   ↓
+[Étape 2] 🧠 GitHub Action - Validation automatique
+   |
+   |--> Vérifie nomenclature du topic
+   |--> Vérifie quota par équipe (via API Confluent)
+   |--> Vérifie partitions & retention < limites
+   |--> Vérifie cohérence du Service Account
+   ↓
+[Étape 3] ✅ Validation manuelle de la PR (optionnel)
+   |
+   |--> Reviewer équipe ou ops valide que tout est conforme
+   ↓
+[Étape 4] 🚀 GitHub Action - Déploiement
+   |
+   |--> terraform init / plan / apply
+   |--> Création du topic Kafka (Confluent Cloud)
+   |--> Création des ACLs liées à l’équipe
+   ↓
+[Étape 5] 🔒 Contrôle des accès
+   |
+   |--> Seul le Service Account d’équipe peut :
+   |       - écrire
+   |       - lire
+   |       - consommer depuis consumer group dédié
+   ↓
+[Étape 6] 📊 Monitoring & Audit
+   |
+   |--> Logs Confluent Cloud ingérés dans Splunk/Elasticsearch
+   |--> Dashboards : par équipe, par topic, volumétrie, erreurs
+   ↓
+[Étape 7] 🔁 Maintien en conditions opérationnelles
+   |
+   |--> PRs suivantes pour modifier retention / partitions
+   |--> Reset offset si demandé (via autre PR ou portail)
+```
+
+---
+
+## 🔁 Flowchart 2 : Abonnement à un topic existant
+
+```text
 +-------------------------------+
 | 👩‍💻 Équipe consommatrice     |
 | veut s’abonner à un topic     |
@@ -103,3 +106,4 @@
 | 🔍 Les logs sont audités via |
 | Splunk / Elastic              |
 +-------------------------------+
+```
