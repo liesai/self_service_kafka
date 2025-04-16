@@ -1,0 +1,9 @@
+subscription_request:
+  topic: team1.payment.v1.prod
+  requested_by_team: team2
+  service_account_id: sa-team2-abc
+  consumer_group: team2-payments-ui
+  reason: "Dashboard consommation"
+  status: approved
+  approver_team: team1
+  requested_at: "2025-04-15T10:32:00Z"

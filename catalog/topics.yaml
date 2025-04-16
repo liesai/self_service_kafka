@@ -1,0 +1,8 @@
+topics:
+  - name: team1.payment.v1.prod
+    owner: team1
+    approvers:
+      - alice@company.com
+      - bob@company.com
+    tags: [paiement, prod]
+    access_policy: approval_required
