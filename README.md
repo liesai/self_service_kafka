@@ -107,3 +107,9 @@ Ce dépôt contient deux modules :
 | Splunk / Elastic              |
 +-------------------------------+
 ```
+Garde‑fou | Pourquoi | Comment l’automatiser
+Convention de nommage (ex. <tribu>.<domaine>.<nom_ressource>.<env>) | Évite les collisions, simplifie la gouvernance | Validator GitHub Action ou policy OPA dans le pipeline
+Templates de configuration (partitions, réplication, rétention par défaut) | Garantir la SLO de la plateforme | Modules Terraform réutilisables ou CRDs dans Backstage
+RBAC : rôles limitées (DeveloperWrite, DeveloperRead…) | Principe du moindre privilège | Script / Terraform qui mappe le rôle à un service account créé par l’équipe Confluent Documentation
+Quota (prod/cons bandwidth, nbre de partitions) | Évite l’« effet voisin bruyant » | Provider Terraform v2 ➜ confluent_quota Confluent Documentation
+Review humaine là où c’est vital (prod ↔ retention ∞, configs sensibles…) | Conformité & cost control | Pull Request obligatoire + approbation « Owner/Approver »
